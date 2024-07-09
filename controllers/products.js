@@ -13,5 +13,4 @@ const productDetails = async (req, res, next) => {
   res.json(await fetchProducts(URL));
 };
 
-module.exports = productController;
-module.exports = productDetails;
+module.exports = { productController, productDetails };
