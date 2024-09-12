@@ -3,17 +3,13 @@ const axios = require("axios");
 
 const express = require("express");
 const bodyparser = require("body-parser");
-const mongoose = require("mongoose");
 const productRouter = require("./routers/products-routes");
 const cartRouter = require("./routers/cart-routes");
 const whishlistRouter = require("./routers/whishList-routes");
+const ConnectDBandStartServer = require("./connect-db");
 const app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
-
-const PORT = process.env.PORT;
-const OKTA_API_TOKEN = process.env.OKTA_API_TOKEN;
-const OKTA_ISSUER = process.env.OKTA_ISSUER;
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // Allow all origins
@@ -48,13 +44,4 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-mongoose
-  .connect(
-    "mongodb+srv://suyash19:y1MvtXuB6JuxYIrT@cluster0.apu41.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-  )
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server started at port ${PORT}`);
-    });
-  })
-  .catch((error) => console.log(error));
+ConnectDBandStartServer(app);

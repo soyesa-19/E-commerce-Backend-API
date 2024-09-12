@@ -1,16 +1,54 @@
 require("dotenv").config();
-const fetchProducts = require("../utils/fetchProducts");
-const PRODUCTS_API = process.env.PRODUCTS_API;
+const Product = require("../models/Product");
 
 const productController = async (req, res, next) => {
-  const data = await fetchProducts(PRODUCTS_API);
-  res.json(data);
+  try {
+    const products = await Product.find({});
+    res.status(200).json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(405).json({ message: "Cannot fetch list of products" });
+  }
+};
+
+const addProductsController = async (req, res, next) => {
+  try {
+    await Product.insertMany(req.body.products);
+    res.status(201).json({ message: "Products added successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(405).json({ message: "Cannot add products to database" });
+  }
 };
 
 const productDetails = async (req, res, next) => {
-  const prodId = req.query.prodId;
-  const URL = PRODUCTS_API + `/${prodId}`;
-  res.json(await fetchProducts(URL));
+  console.log(req.query.prodId);
+  const { prodId } = req.query;
+  try {
+    const productDetails = await Product.findById(prodId);
+    res.status(201).json(productDetails);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-module.exports = { productController, productDetails };
+const productsByCategory = async (req, res, next) => {
+  const { ctg } = req.query;
+  console.log(ctg);
+  try {
+    const categoryProducts = await Product.find({ category: ctg });
+    console.log(categoryProducts);
+    res.status(201).json(categoryProducts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Cannot find products for this category" });
+  }
+};
+
+module.exports = {
+  productController,
+  productDetails,
+  addProductsController,
+  productsByCategory,
+};
