@@ -22,7 +22,6 @@ const addProductsController = async (req, res, next) => {
 };
 
 const productDetails = async (req, res, next) => {
-  console.log(req.query.prodId);
   const { prodId } = req.query;
   try {
     const productDetails = await Product.findById(prodId);
@@ -35,10 +34,8 @@ const productDetails = async (req, res, next) => {
 
 const productsByCategory = async (req, res, next) => {
   const { ctg } = req.query;
-  console.log(ctg);
   try {
     const categoryProducts = await Product.find({ category: ctg });
-    console.log(categoryProducts);
     res.status(201).json(categoryProducts);
   } catch (error) {
     console.log(error);
