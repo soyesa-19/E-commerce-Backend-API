@@ -3,6 +3,7 @@ const axios = require("axios");
 
 const express = require("express");
 const bodyparser = require("body-parser");
+const mongoose = require("mongoose");
 const productRouter = require("./routers/products-routes");
 const cartRouter = require("./routers/cart-routes");
 const whishlistRouter = require("./routers/whishList-routes");
@@ -46,6 +47,14 @@ app.post("/signup", async (req, res) => {
     res.status(error).json(error);
   }
 });
-app.listen(PORT, () => {
-  console.log(`Server started at port ${PORT}`);
-});
+
+mongoose
+  .connect(
+    "mongodb+srv://suyash19:y1MvtXuB6JuxYIrT@cluster0.apu41.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  )
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server started at port ${PORT}`);
+    });
+  })
+  .catch((error) => console.log(error));
