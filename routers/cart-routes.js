@@ -4,13 +4,14 @@ const {
   addToCart,
   removeItemFromCart,
 } = require("../controllers/cart");
+const { authVerifier } = require("../controllers/auth-verifier");
 
 const cartRouter = express.Router();
 
-cartRouter.get("/", cartItems);
+cartRouter.get("/", authVerifier, cartItems);
 
-cartRouter.post("/", addToCart);
+cartRouter.post("/", authVerifier, addToCart);
 
-cartRouter.post("/delete", removeItemFromCart);
+cartRouter.post("/delete", authVerifier, removeItemFromCart);
 
 module.exports = cartRouter;
