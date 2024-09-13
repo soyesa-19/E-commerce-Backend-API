@@ -1,22 +1,4 @@
-let DUMMYCART = [
-  {
-    id: 4,
-    qty: 1,
-    title: "Mens Casual Slim Fit",
-    price: 15.99,
-    totalPrice: 15.99,
-    image: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
-  },
-
-  {
-    id: 6,
-    title: "Solid Gold Petite Micropave ",
-    qty: 1,
-    price: 168,
-    totalPrice: 168,
-    image: "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_.jpg",
-  },
-];
+let DUMMYCART = [];
 
 const cartItems = (req, res, next) => {
   res.status(200).json(DUMMYCART);

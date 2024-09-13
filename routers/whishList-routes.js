@@ -5,12 +5,14 @@ const {
   removeItemFromWhishlist,
 } = require("../controllers/whishlist");
 
+const { authVerifier } = require("../controllers/auth-verifier");
+
 const whishlistRouter = express.Router();
 
-whishlistRouter.get("/", whishlistItems);
+whishlistRouter.get("/", authVerifier, whishlistItems);
 
-whishlistRouter.post("/", addWhishlistItem);
+whishlistRouter.post("/", authVerifier, addWhishlistItem);
 
-whishlistRouter.post("/delete", removeItemFromWhishlist);
+whishlistRouter.post("/delete", authVerifier, removeItemFromWhishlist);
 
 module.exports = whishlistRouter;
