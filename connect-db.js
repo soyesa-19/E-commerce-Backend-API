@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const DB_CLIENT_URL = process.env.MONGO_CIENT_URL;
 const PORT = process.env.PORT;
 
-const ConnectDBandStartServer = async (app) => {
+const ConnectDBAndStartServer = async (app) => {
   try {
     await mongoose.connect(DB_CLIENT_URL);
     console.log("DB connected");
@@ -14,4 +14,4 @@ const ConnectDBandStartServer = async (app) => {
   }
 };
 
-module.exports = ConnectDBandStartServer;
+module.exports = ConnectDBAndStartServer;
