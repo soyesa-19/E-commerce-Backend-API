@@ -6,7 +6,6 @@ const oktaJwtVerifier = new OktaJwtVerifier({
 });
 
 const authVerifier = async (req, res, next) => {
-  console.log(req.headers.authorization);
   const authHeader = req.headers.authorization || "";
 
   const token = authHeader.match(/Bearer (.+)/);
@@ -26,7 +25,7 @@ const authVerifier = async (req, res, next) => {
     req.user = jwt.claims;
     next();
   } catch (error) {
-    return res.status(401).json({ error: "oken invalid, not authorised" });
+    return res.status(401).json({ error: "Token invalid, not authorised" });
   }
 };
 
