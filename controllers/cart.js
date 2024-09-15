@@ -1,7 +1,21 @@
 let DUMMYCART = [];
+const User = require("../models/User");
 
-const cartItems = (req, res, next) => {
-  res.status(200).json(DUMMYCART);
+const cartItems = async (req, res, next) => {
+  const { sub: userEmail } = req.user;
+  try {
+    const { cart } = await User.findOne({ email: userEmail });
+    if (!cart) {
+      res.status(404).json({ error: "User with email not found." });
+    }
+    res.status(200).json({
+      cart,
+      message: "Succesfully sent user cart data",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ error: "Cannot fetch cart data of the user." });
+  }
 };
 
 const addToCart = (req, res, next) => {
