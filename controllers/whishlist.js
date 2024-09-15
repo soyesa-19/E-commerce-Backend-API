@@ -1,13 +1,54 @@
-let DUMMYWHISHLIST = [];
+DUMMYWHISHLIST = [];
+const mongoose = require("mongoose");
+const User = require("../models/User");
+const Product = require("../models/Product");
 
-const whishlistItems = (req, res, next) => {
-  res.status(200).json(DUMMYWHISHLIST);
+const whishlistItems = async (req, res, next) => {
+  const { sub: userEmail } = req.user;
+  try {
+    const { whishList } = await User.findOne({ email: userEmail });
+    if (!whishList) {
+      return res.status(404).json({ error: "User with email not found." });
+    }
+    console.log(whishList);
+    try {
+      const whishlistProducts = await Product.find({ _id: { $in: whishList } });
+      console.log(whishlistProducts);
+      res.status(200).json(whishlistProducts);
+    } catch (error) {
+      res
+        .json(500)
+        .json({ message: "Cannot fetch whishlist data for the user" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Cannot fetch whishlist data of the user." });
+  }
 };
 
-const addWhishlistItem = (req, res, next) => {
-  const newItem = req.body.item;
-  DUMMYWHISHLIST.push(newItem);
-  res.status(201).json("Item added to whichlist successfully");
+const addWhishlistItem = async (req, res, next) => {
+  const { id: productId } = req.body.item;
+  const { sub: userEmail } = req.user;
+  try {
+    const check = await User.findOneAndUpdate(
+      { email: userEmail },
+      { $addToSet: { whishList: new mongoose.Types.ObjectId(productId) } },
+      { new: true }
+    );
+    console.log(check);
+    res
+      .status(201)
+      .json({ message: "Successfully updated user whishlist data" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Error occured while updating whishlist in db" });
+  }
+
+  // const newItem = req.body.item;
+  // DUMMYWHISHLIST.push(newItem);
+  // res.status(201).json("Item added to whichlist successfully");
 };
 
 const removeItemFromWhishlist = (req, res, next) => {

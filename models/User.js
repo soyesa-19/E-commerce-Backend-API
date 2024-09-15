@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   mobile: { type: Number },
   cart: [cartItemSchema],
-  whishList: [whishlistItemSchema],
+  whishList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 
 module.exports = mongoose.model("User", userSchema);
