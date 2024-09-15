@@ -35,7 +35,6 @@ const addWhishlistItem = async (req, res, next) => {
       { $addToSet: { whishList: new mongoose.Types.ObjectId(productId) } },
       { new: true }
     );
-    console.log(check);
     res
       .status(201)
       .json({ message: "Successfully updated user whishlist data" });
@@ -45,10 +44,6 @@ const addWhishlistItem = async (req, res, next) => {
       .status(500)
       .json({ message: "Error occured while updating whishlist in db" });
   }
-
-  // const newItem = req.body.item;
-  // DUMMYWHISHLIST.push(newItem);
-  // res.status(201).json("Item added to whichlist successfully");
 };
 
 const removeItemFromWhishlist = (req, res, next) => {
