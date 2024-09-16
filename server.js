@@ -1,5 +1,4 @@
 require("dotenv").config();
-const axios = require("axios");
 const express = require("express");
 const bodyparser = require("body-parser");
 const productRouter = require("./routers/products-routes");

@@ -1,33 +1,121 @@
 let DUMMYCART = [];
+const Product = require("../models/Product");
+const User = require("../models/User");
+const mongoose = require("mongoose");
 
-const cartItems = (req, res, next) => {
-  res.status(200).json(DUMMYCART);
+const cartItems = async (req, res, next) => {
+  const { sub: userEmail } = req.user;
+  try {
+    const { cart } = await User.findOne({ email: userEmail });
+    if (!cart) {
+      return res.status(404).json({ error: "User with email not found." });
+    }
+
+    const productIds = cart?.map((cartItem) => cartItem.product);
+    console.log(productIds);
+
+    try {
+      const cartProducts = await Product.find({ _id: { $in: productIds } });
+      const cartWithDetails = cartProducts?.map((product) => {
+        const cartItem = cart?.find(
+          (item) => item.product.toString() === product._id.toString()
+        );
+        return {
+          ...product._doc,
+          qty: cartItem.quantity, // Add quantity from the cart
+          id: product._id,
+        };
+      });
+      res.status(200).json(cartWithDetails);
+    } catch (error) {
+      res.status(404).json({ message: "Cannot find cart data for the user" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ error: "Cannot fetch cart data of the user." });
+  }
 };
 
-const addToCart = (req, res, next) => {
+const addToCart = async (req, res, next) => {
   console.log(req.body);
-  const new_item = req.body.item;
-  const isItemExist = DUMMYCART.find((item) => item.id === new_item.id);
-  if (!isItemExist) {
-    DUMMYCART.push({ ...new_item, qty: 1, totalPrice: new_item.price });
-  } else {
-    isItemExist.totalPrice += new_item.price;
-    isItemExist.qty += 1;
+  const { id } = req.body.item;
+  const { sub: userEmail } = req.user;
+
+  try {
+    const productId = new mongoose.Types.ObjectId(id);
+    const { cart } = await User.findOne({ email: userEmail });
+    console.log(cart);
+    console.log(userEmail);
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart data for user not found" });
+    }
+
+    const itemExist = cart?.find((cartItem) =>
+      cartItem.product.equals(productId)
+    );
+
+    if (itemExist) {
+      itemExist.quantity += 1;
+    } else {
+      cart.push({ product: productId, quantity: 1 });
+    }
+
+    await User.findOneAndUpdate(
+      { email: userEmail },
+      { cart: cart },
+      { new: true }
+    );
+    res.status(201).json({ message: "Successfully updated the cart" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error! Cannot update the cart" });
   }
-  res.status(201).json({ message: "Successfully updated cart" });
 };
 
-const removeItemFromCart = (req, res, next) => {
-  const itemId = req.body.id;
-  const newItem = DUMMYCART.find((cartItem) => cartItem.id === itemId);
-  if (newItem.qty === 1) {
-    DUMMYCART = DUMMYCART.filter((cartItem) => cartItem.id != itemId);
-  } else {
-    newItem.qty -= 1;
-    newItem.totalPrice -= newItem.price;
-  }
+const removeItemFromCart = async (req, res, next) => {
+  const { id } = req.body;
+  const { sub: userEmail } = req.user;
 
-  res.status(201).json({ message: "Successfully deleted item from cart" });
+  try {
+    const productId = new mongoose.Types.ObjectId(id);
+    const user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User cannot be found" });
+    }
+
+    const removeItem = user?.cart?.find((cartItem) =>
+      cartItem.product.equals(productId)
+    );
+
+    if (!removeItem) {
+      return res
+        .status(500)
+        .json({ message: "Cart item not found in cart to remove!" });
+    }
+
+    if (removeItem.quantity === 1) {
+      user.cart = user?.cart?.filter(
+        (cartItem) => cartItem.product.toString() != id
+      );
+    } else {
+      removeItem.quantity -= 1;
+    }
+
+    try {
+      await user.save();
+      res.status(201).json({ message: "Cart item removed successfully" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({
+          message: "Internal server error! Updated user cannot be saved",
+        });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Cannot remove item from cart" });
+  }
 };
 
 module.exports = { cartItems, addToCart, removeItemFromCart };

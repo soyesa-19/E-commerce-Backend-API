@@ -21,7 +21,6 @@ const authVerifier = async (req, res, next) => {
       accessToken,
       "api://default"
     );
-    console.log(jwt.claims);
     req.user = jwt.claims;
     next();
   } catch (error) {
