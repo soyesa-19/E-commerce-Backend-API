@@ -7,7 +7,12 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true },
   mobile: { type: Number },
-  cart: [cartItemSchema],
+  cart: [
+    {
+      product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+      quantity: { type: Number, default: 1 },
+    },
+  ],
   whishList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 
