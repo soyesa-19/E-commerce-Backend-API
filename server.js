@@ -5,6 +5,7 @@ const productRouter = require("./routers/products-routes");
 const cartRouter = require("./routers/cart-routes");
 const whishlistRouter = require("./routers/whishList-routes");
 const signUpRouter = require("./routers/siguUp-routes");
+const addressRouter = require("./routers/address-routes");
 const ConnectDBAndStartServer = require("./connect-db");
 const app = express();
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -23,5 +24,6 @@ app.use("/api/products", productRouter);
 app.use("/api/cartProds", cartRouter);
 app.use("/api/whishlist", whishlistRouter);
 app.use("/api/signup", signUpRouter);
+app.use("/api/addresses", addressRouter);
 
 ConnectDBAndStartServer(app);
