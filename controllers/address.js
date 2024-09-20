@@ -11,8 +11,17 @@ const getAddressesController = async (req, res, next) => {
       return res.status(401).json({ message: "No user found with this email" });
     }
 
+    //Finding all addresses related with the user
+    const addresses = await Address.find({ user: user._id });
+
+    if (!addresses) {
+      return res
+        .status(404)
+        .json({ message: " Error while fetching the addresses" });
+    }
+
     res.status(200).json({
-      addresses: user?.addresses.map((address) =>
+      addresses: addresses.map((address) =>
         address.toObject({ getters: true })
       ),
     });
@@ -29,28 +38,26 @@ const postAddressController = async (req, res, next) => {
   console.log(customerName);
 
   try {
-    const user = await User.findOneAndUpdate(
-      { email: userEmail },
-      {
-        $push: {
-          addresses: {
-            customerName,
-            type,
-            address,
-            contact,
-          },
-        },
-      },
-      { new: true } // Return the updated document
-    );
+    const user = await User.findOne({ email: userEmail });
 
     if (!user) {
       return res.status(500).json({ message: "Error while adding addresses" });
     }
-    console.log(user.addresses);
-    res.status(201).json(user.addresses);
+
+    const newAddress = new Address({
+      customerName,
+      type,
+      address,
+      contact,
+      user: user._id,
+    });
+
+    await newAddress.save();
+    res.status(201).json({ message: "Address added successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
+    res
+      .status(500)
+      .json({ message: "Something went wrong while adding address for user" });
   }
 };
 
