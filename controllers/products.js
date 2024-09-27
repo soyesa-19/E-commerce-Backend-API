@@ -4,7 +4,9 @@ const Product = require("../models/Product");
 const productController = async (req, res, next) => {
   try {
     const products = await Product.find({});
-    res.status(200).json(products);
+    res.status(200).json({
+      products: products.map((product) => product.toObject({ getters: true })),
+    });
   } catch (error) {
     console.log(error);
     res.status(405).json({ message: "Cannot fetch list of products" });
@@ -25,7 +27,9 @@ const productDetails = async (req, res, next) => {
   const { prodId } = req.query;
   try {
     const productDetails = await Product.findById(prodId);
-    res.status(201).json(productDetails);
+    res
+      .status(201)
+      .json({ productDetails: productDetails.toObject({ getters: true }) });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

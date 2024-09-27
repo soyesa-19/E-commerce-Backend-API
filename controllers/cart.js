@@ -107,11 +107,9 @@ const removeItemFromCart = async (req, res, next) => {
       await user.save();
       res.status(201).json({ message: "Cart item removed successfully" });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          message: "Internal server error! Updated user cannot be saved",
-        });
+      return res.status(500).json({
+        message: "Internal server error! Updated user cannot be saved",
+      });
     }
   } catch (error) {
     res.status(500).json({ message: "Cannot remove item from cart" });
