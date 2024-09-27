@@ -38,7 +38,7 @@ const cartItems = async (req, res, next) => {
 
 const addToCart = async (req, res, next) => {
   console.log(req.body);
-  const { id } = req.body.item;
+  const { id, qty } = req.body.item;
   const { sub: userEmail } = req.user;
 
   try {
@@ -58,7 +58,7 @@ const addToCart = async (req, res, next) => {
     if (itemExist) {
       itemExist.quantity += 1;
     } else {
-      cart.push({ product: productId, quantity: 1 });
+      cart.push({ product: productId, quantity: qty });
     }
 
     await User.findOneAndUpdate(
