@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { addressSchema } = require("./Address");
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -13,7 +12,6 @@ const userSchema = new mongoose.Schema({
     },
   ],
   whishList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-  addresses: [addressSchema],
 });
 
 module.exports = mongoose.model("User", userSchema);
