@@ -74,7 +74,7 @@ const addToCart = async (req, res, next) => {
 };
 
 const removeItemFromCart = async (req, res, next) => {
-  const { id } = req.body;
+  const { id, qty } = req.body;
   const { sub: userEmail } = req.user;
 
   try {
@@ -95,12 +95,11 @@ const removeItemFromCart = async (req, res, next) => {
         .json({ message: "Cart item not found in cart to remove!" });
     }
 
-    if (removeItem.quantity === 1) {
+    removeItem.quantity -= qty;
+    if (removeItem.quantity === 0) {
       user.cart = user?.cart?.filter(
         (cartItem) => cartItem.product.toString() != id
       );
-    } else {
-      removeItem.quantity -= 1;
     }
 
     try {
